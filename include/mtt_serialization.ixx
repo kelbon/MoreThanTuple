@@ -369,7 +369,17 @@ constexpr bool value_deserializator(InIter& in_iter, T& value) noexcept {
 // clang-format off
 template <typename T, mode Mode = mode::network, std::ranges::range Range>
 requires(serializable<T, Mode> && one_of<std::ranges::range_value_t<Range>, std::byte, char, unsigned char>)
-constexpr T deserialize(Range&& range, T init = T{}) { // init - possibility for no default constructible T
+constexpr T deserialize(Range&& range) {
+  // clang-format on
+  T result{};
+  auto in_iter = std::ranges::begin(range);
+  value_deserializator<Mode>(in_iter, result);
+  return result;
+}
+// clang-format off
+template <typename T, mode Mode = mode::network, std::ranges::range Range>
+requires(serializable<T, Mode> && one_of<std::ranges::range_value_t<Range>, std::byte, char, unsigned char>)
+constexpr T deserialize(Range&& range, T init) { // init - possibility for no default constructible T
   // clang-format on
   T result = std::move(init);
   auto in_iter = std::ranges::begin(range);
