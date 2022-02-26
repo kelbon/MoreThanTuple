@@ -50,10 +50,15 @@ struct any_type {
   template <typename T>
   operator T&&();
 };
-
+// std::is_constructible_v dont use { }, so such types exist
+// which is not constructible with (), but constructible with {}
+template<typename T, typename... Args>
+concept constructible = requires() {
+  T{std::declval<Args>()...};
+};
 template <typename T, size_t... Is>
 consteval auto field_count(std::index_sequence<Is...>) {
-  if constexpr (std::is_constructible_v<T, any_type<Is>...>) {
+  if constexpr (constructible<T, any_type<Is>...>) {
     return sizeof...(Is);
   } else {
     return field_count<T>(std::make_index_sequence<sizeof...(Is) - 1>{});

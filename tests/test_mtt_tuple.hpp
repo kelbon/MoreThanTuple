@@ -68,6 +68,33 @@ TEST(Algos) {
       cat);
   static_assert(std::is_same_v<decltype(check), const std::true_type>);
 }
+
+struct A {
+  int i = 10;
+  double y = 20;
+  const char* c = "hello";
+  using enable_magic = void;
+};
+
+TEST(AA) {
+  A value;
+  mtt::visit(value, [](auto&) {});
+}
+
+struct B {
+  A value;
+  int i = 10;
+  double y = 20;
+  const char* c = "hello";
+  using enable_magic = void;
+};
+
+TEST(BB) {
+  static_assert(mtt::tuple_size_v<B> == 4);
+  B value;
+  mtt::visit_recursive(value, [](auto&) { });
+}
+
 }  // namespace mtt::test
 
 #endif TEST_MTT_TUPLE_HPP
