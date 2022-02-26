@@ -3,13 +3,12 @@ module;
 #include <climits>
 export module mtt.tuple : magic;
 
-import<functional>;  // only for placeholders lol
-
 import mtt.traits;
 
 namespace noexport {
 // HACK for non error when _X identifier do not located in scope of type deductor
 struct name_lookup_saver {};
+
 constexpr name_lookup_saver _0;
 constexpr name_lookup_saver _1;
 constexpr name_lookup_saver _2;
@@ -204,8 +203,8 @@ export namespace mtt {
 // CONCEPT tuple_alike
 template <typename T>
 concept tuple_alike = requires(T) {
-  typename std::tuple_size<std::remove_cvref_t<T>>;
-  typename std::tuple_element_t<0, std::remove_cvref_t<T>>;
+  typename ::std::tuple_size<std::remove_cvref_t<T>>;
+  typename ::std::tuple_element_t<0, std::remove_cvref_t<T>>;
 };
 
 // customization point enable_magic_for
@@ -420,11 +419,11 @@ constexpr auto& magic_get(T&& value) noexcept {
   }
 }
 
-// TEMPLATE FUNCTION magic_view(converts aggregate into special tuple
+// TEMPLATE FUNCTION magic_tie(converts aggregate into special tuple
 // of & on aggregate fields with stored types info about aggregate)
 
 template <typename T>
-constexpr auto magic_view(T&& value) noexcept {
+constexpr auto magic_tie(T&& value) noexcept {
   return [&]<size_t... Is>(std::index_sequence<Is...>) {
     return view_tuple<tuple_element_t<Is, std::remove_reference_t<T>>...>(
         magic_get<Is>(std::forward<T>(value))...);
@@ -471,10 +470,10 @@ DEDUCT_TYPE(29);
 template <size_t I, typename T>
 using tuple_element_t = typename type_deductor<I, std::remove_reference_t<T>>::type;
 
-// TEMPLATE FUNCTION magic(converts aggrevate into tuple)
+// TEMPLATE FUNCTION to_tuple
 
 template <magic_tuple_alike T>
-constexpr auto magic(T&& value) {
+constexpr auto to_tuple(T&& value) {
   return []<typename U, size_t... Is>(U && value_, std::index_sequence<Is...>) {
     return std::tuple<tuple_element_t<Is, U>...>(magic_get<Is>(std::forward<T>(value_))...);
   } // INVOKE HERE

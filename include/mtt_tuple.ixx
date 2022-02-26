@@ -25,14 +25,14 @@ struct value_in_tuple<T, Index> {
   }
   static constexpr T value = T{};
 };
-// tuple_alike_with_magic and magic_filter for integrating with mtt::magic
+// tuple_alike_with_magic and magic_filter for integrating with mtt:magic
 template <typename T>
 concept tuple_alike_with_magic = mtt::tuple_alike<T> || mtt::magic_tuple_alike<T>;
 
 template <typename T>
 constexpr decltype(auto) magic_filter(T&& value) noexcept {
   if constexpr (mtt::magic_tuple_alike<T>)
-    return mtt::magic_view(std::forward<T>(value));
+    return mtt::magic_tie(std::forward<T>(value));
   else
     return std::forward<T>(value);
 }

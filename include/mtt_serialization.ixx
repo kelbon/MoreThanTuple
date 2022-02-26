@@ -51,7 +51,7 @@ using size_of_range_t = std::uintmax_t;
 template <typename T>
 consteval bool is_compile_time_sized() noexcept {
   if constexpr (magic_tuple_alike<T>) {
-    return is_compile_time_sized<std::remove_reference_t<decltype(magic(std::declval<T>()))>>();
+    return is_compile_time_sized<std::remove_reference_t<decltype(to_tuple(std::declval<T>()))>>();
   }
   if constexpr (std::ranges::range<T>) {
     if constexpr (std::ranges::sized_range<T>) {
@@ -82,7 +82,7 @@ template <typename T>
 constexpr size_t sizeof_for_binary_serialization(T&& value) {
   using Thing = std::remove_reference_t<T>;
   if constexpr (magic_tuple_alike<Thing>) {
-    return sizeof_for_binary_serialization(magic(std::forward<T>(value)));
+    return sizeof_for_binary_serialization(to_tuple(std::forward<T>(value)));
   }
   size_t result = 0;
   if constexpr (std::ranges::range<Thing>) {
@@ -123,7 +123,7 @@ consteval size_t sizeof_for_binary_serialization() {
   // clang-format on
   using Thing = std::remove_reference_t<T>;
   if constexpr (magic_tuple_alike<Thing>)
-    return sizeof_for_binary_serialization<decltype(magic(std::declval<T>()))>();
+    return sizeof_for_binary_serialization<decltype(to_tuple(std::declval<T>()))>();
   if constexpr (tuple_alike<Thing>)
     return apply(
         []<typename... Types>(std::type_identity<Types> && ...) {
@@ -179,7 +179,7 @@ template <typename T, mode Mode>
 consteval bool tuple_alike_of_serializable_types_recursive() noexcept {
   if constexpr (magic_tuple_alike<T>) {
     return tuple_alike_of_serializable_types_recursive<
-        std::remove_reference_t<decltype(magic(std::declval<T>()))>, Mode>();
+        std::remove_reference_t<decltype(to_tuple(std::declval<T>()))>, Mode>();
   }
   if constexpr (tuple_alike<T>) {
     return []<typename... Types>(type_list<Types...>) {
@@ -210,7 +210,7 @@ template <mode Mode, typename OutIter, typename T>
 constexpr bool value_serializator(OutIter& out_iter, T&& value) noexcept {
   using Thing = std::remove_reference_t<T>;
   if constexpr (magic_tuple_alike<Thing>) {
-    return value_serializator<Mode>(out_iter, magic(std::forward<T>(value)));
+    return value_serializator<Mode>(out_iter, to_tuple(std::forward<T>(value)));
   }
   if constexpr (std::ranges::range<Thing>) {
     if constexpr (std::ranges::sized_range<Thing>) {
@@ -286,7 +286,7 @@ constexpr bool value_deserializator(InIter& in_iter, T& value) noexcept {
   using Thing = std::remove_reference_t<T>;
 
   if constexpr (magic_tuple_alike<Thing>) {
-    auto magic_tuple = magic_view(value);
+    auto magic_tuple = magic_tie(value);
     bool res = value_deserializator<Mode>(in_iter, magic_tuple);
     if (res == true) [[likely]] {
       [&value, &magic_tuple ]<size_t... Is>(std::index_sequence<Is...>) {
