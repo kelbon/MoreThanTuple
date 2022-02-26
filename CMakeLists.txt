@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.21)
-project(morethentuple)
+project(morethantuple)
 
 option(ENABLE_TESTS "Enable tests or not" OFF)
 
@@ -9,11 +9,11 @@ if(ENABLE_TESTS)
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/main.cpp CMAKE_CONFIGURE_DEPENDS)
 endif() # else ${tests} is empty
 
-add_executable(morethentuple ${tests} ${modules})
-target_include_directories(morethentuple PUBLIC ../include)
+add_executable(morethantuple ${tests} ${modules})
+target_include_directories(morethantuple PUBLIC ../include)
 
 if (MSVC)
-    target_compile_options(morethentuple PUBLIC /std:c++latest)
+    target_compile_options(morethantuple PUBLIC /std:c++latest)
 else()
     message("\nNow (17.11.2021) its works only for msvc with /std:c++latest (NOT C++20 flag), Waiting for C++20 support from other compilers\n")
 endif()

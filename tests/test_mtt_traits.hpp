@@ -52,6 +52,26 @@ TEST(StringLiterals) {
   constexpr auto v = string_literal<char, 4>(std::string_view("str").data());
 }
 
+struct Aggregate {
+  int value0;
+  double& value1;
+  char&& value2;
+  const bool value3;
+  const float& value4;
+};
+
+struct Big {
+  int g1, g2, g3, g4, g5, g6, g7, g8, g9, g11, g12, g13, g14, g15, g16, g17, g18, g19;
+};
+TEST(Deductor) {
+  static_assert(std::is_same_v<tuple_element_t<0, Aggregate>, int> &&
+                std::is_same_v<tuple_element_t<1, Aggregate>, double&> &&
+                std::is_same_v<tuple_element_t<2, Aggregate>, char&&> &&
+                std::is_same_v<tuple_element_t<3, Aggregate>, const bool> &&
+                std::is_same_v<tuple_element_t<4, Aggregate>, const float&>);
+  static_assert(tuple_size_v<Big> == 18);
+}
+
 }  // namespace mtt::test
 
 #endif  // !TEST_MTT_TRAITS_HPP

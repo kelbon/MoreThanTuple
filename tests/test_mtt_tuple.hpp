@@ -23,7 +23,7 @@ struct ref_aggr {
 };
 
 TEST(TupleCatting) {
-  constexpr auto lh = mtt::magic_tuple_size_v<ref_aggr>;
+  constexpr auto lh = mtt::tuple_size_v<ref_aggr>;
   float x = 3.14f;
   ref_aggr refa(x, 10);
   std::tuple tpl1(10, 20, "hello");

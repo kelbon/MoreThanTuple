@@ -291,8 +291,8 @@ constexpr bool value_deserializator(InIter& in_iter, T& value) noexcept {
     if (res == true) [[likely]] {
       [&value, &magic_tuple ]<size_t... Is>(std::index_sequence<Is...>) {
         ((magic_get<Is>(value) = std::get<Is>(magic_tuple)), ...);
-      }
-      (std::make_index_sequence<magic_tuple_size_v<std::remove_reference_t<T>>>{});
+      } // INVOKE HERE
+      (std::make_index_sequence<tuple_size_v<std::remove_reference_t<T>>>{});
     }
     return res;
   }
